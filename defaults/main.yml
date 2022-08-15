@@ -1,1 +1,2 @@
-juniper_build: "/tmp/ansible-build/{{ inventory_hostname }}/"
+---
+# defaults file for juniper.bgp
