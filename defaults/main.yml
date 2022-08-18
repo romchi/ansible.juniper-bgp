@@ -21,3 +21,9 @@ lp_inet: 130
 lp_ix: 140
 lp_peer: 150
 lp_customer: 160
+
+# if set to true you need create prefix-list {{ origin_name }}-v4
+unmanaged_prefixes_v4: false
+
+# if set to true you need create prefix-list {{ origin_name }}-v6
+unmanaged_prefixes_v6: false

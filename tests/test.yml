@@ -1,5 +1,9 @@
 ---
-- hosts: localhost
-  remote_user: root
+- hosts: all
+
+  vars:
+    origin_asn: 65000
+    origin_name: test
+
   roles:
-    - juniper.bgp
+    - juniper-bgp

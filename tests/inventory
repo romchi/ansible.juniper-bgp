@@ -1,2 +1,1 @@
-localhost
-
+10.10.1.11      ansible_network_os=junos    ansible_connection=netconf

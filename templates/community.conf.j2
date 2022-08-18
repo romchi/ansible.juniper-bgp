@@ -5,10 +5,35 @@ policy-options {
 
     community for-blackhole members {{ origin_asn }}:{{ community_index_bh }};
 
-    replace: community unsupported-communities {
-        invert-match;
-        members [ "{{ unsupported_communities }}" ];
-    }
+    community unsupported-communities members [
+        {{ community_index_group_inet }}:{{ community_index_bh }}
+        {{ community_index_group_inet }}:{{ community_index_dna }}
+        {{ community_index_group_inet }}:{{ community_index_pre1 }}
+        {{ community_index_group_inet }}:{{ community_index_pre2 }}
+        {{ community_index_group_inet }}:{{ community_index_pre3 }}
+        {{ community_index_group_inet }}:{{ community_index_pre4 }}
+
+        {{ community_index_group_ix }}:{{ community_index_bh }}
+        {{ community_index_group_ix }}:{{ community_index_dna }}
+        {{ community_index_group_inet }}:{{ community_index_pre1 }}
+        {{ community_index_group_inet }}:{{ community_index_pre2 }}
+        {{ community_index_group_inet }}:{{ community_index_pre3 }}
+        {{ community_index_group_inet }}:{{ community_index_pre4 }}
+
+        {{ community_index_group_peer }}:{{ community_index_bh }}
+        {{ community_index_group_peer }}:{{ community_index_dna }}
+        {{ community_index_group_inet }}:{{ community_index_pre1 }}
+        {{ community_index_group_inet }}:{{ community_index_pre2 }}
+        {{ community_index_group_inet }}:{{ community_index_pre3 }}
+        {{ community_index_group_inet }}:{{ community_index_pre4 }}
+
+        {{ origin_asn }}:{{ community_index_bh }}
+        {{ origin_asn }}:{{ community_index_dna }}
+        {{ origin_asn }}:{{ community_index_pre1 }}
+        {{ origin_asn }}:{{ community_index_pre2 }}
+        {{ origin_asn }}:{{ community_index_pre3 }}
+        {{ origin_asn }}:{{ community_index_pre4 }}
+    ];
 
     replace: community from-inet        members {{ origin_asn }}:{{ community_index_group_inet }};
     replace: community from-ix          members {{ origin_asn }}:{{ community_index_group_ix }};
