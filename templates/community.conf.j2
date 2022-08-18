@@ -1,0 +1,43 @@
+policy-options {
+
+    replace: community {{ origin_name }}-origin members {{ origin_asn }}:{{ origin_asn }};
+    replace: community blackhole-all members {{ origin_asn }}:{{ community_index_bh }};
+
+    community for-blackhole members {{ origin_asn }}:{{ community_index_bh }};
+
+    replace: community unsupported-communities {
+        invert-match;
+        members [ "{{ unsupported_communities }}" ];
+    }
+
+    replace: community from-inet        members {{ origin_asn }}:{{ community_index_group_inet }};
+    replace: community from-ix          members {{ origin_asn }}:{{ community_index_group_ix }};
+    replace: community from-peer        members {{ origin_asn }}:{{ community_index_group_peer }};
+    replace: community from-customer    members {{ origin_asn }}:{{ community_index_group_customer }};
+
+    replace: community dna-all  members {{ origin_asn }}:{{ community_index_dna }};
+    replace: community dna-inet members {{ community_index_group_inet }}:{{ community_index_dna }};
+    replace: community dna-ix   members {{ community_index_group_ix }}:{{ community_index_dna }};
+    replace: community dna-peer members {{ community_index_group_peer }}:{{ community_index_dna }};
+
+    replace: community prepend-all-1 members {{ origin_asn }}:{{ community_index_pre1 }};
+    replace: community prepend-all-2 members {{ origin_asn }}:{{ community_index_pre2 }};
+    replace: community prepend-all-3 members {{ origin_asn }}:{{ community_index_pre3 }};
+    replace: community prepend-all-4 members {{ origin_asn }}:{{ community_index_pre4 }};
+
+    replace: community prepend-inet-1 members {{ community_index_group_inet }}:{{ community_index_pre1 }};
+    replace: community prepend-inet-2 members {{ community_index_group_inet }}:{{ community_index_pre2 }};
+    replace: community prepend-inet-3 members {{ community_index_group_inet }}:{{ community_index_pre3 }};
+    replace: community prepend-inet-4 members {{ community_index_group_inet }}:{{ community_index_pre4 }};
+
+    replace: community prepend-ix-1 members {{ community_index_group_ix }}:{{ community_index_pre1 }};
+    replace: community prepend-ix-2 members {{ community_index_group_ix }}:{{ community_index_pre2 }};
+    replace: community prepend-ix-3 members {{ community_index_group_ix }}:{{ community_index_pre3 }};
+    replace: community prepend-ix-4 members {{ community_index_group_ix }}:{{ community_index_pre4 }};
+
+    replace: community prepend-peer-1 members {{ community_index_group_peer }}:{{ community_index_pre1 }};
+    replace: community prepend-peer-2 members {{ community_index_group_peer }}:{{ community_index_pre2 }};
+    replace: community prepend-peer-3 members {{ community_index_group_peer }}:{{ community_index_pre3 }};
+    replace: community prepend-peer-4 members {{ community_index_group_peer }}:{{ community_index_pre4 }};
+
+}

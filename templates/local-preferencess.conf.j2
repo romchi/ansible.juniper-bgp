@@ -1,0 +1,14 @@
+policy-options {
+    replace: policy-statement lp-inet {
+        then local-preference {{ lp_inet }}
+    }
+    replace: policy-statement lp-ix {
+        then local-preference {{ lp_ix }}
+    }
+    replace: policy-statement lp-peer {
+        then local-preference {{ lp_peer }}
+    }
+    replace: policy-statement lp-customer {
+        then local-preference {{ lp_customer }}
+    }
+}

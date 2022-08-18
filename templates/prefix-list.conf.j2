@@ -1,0 +1,13 @@
+policy-options {
+
+{% if prefix_lists is defined %}
+{% for name, prefix_list in prefix_lists.items() %}
+    replace: prefix-list {{ name }} {
+{% for value in prefix_list %}
+        {{ value }};
+{% endfor %}
+    }
+{% endfor %}
+{% endif %}
+
+}

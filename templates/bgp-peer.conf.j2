@@ -1,0 +1,227 @@
+policy-options {
+
+    community for-blackhole members {{ item.peer_as }}:{{ community_index_bh }};
+    replace: community from-{{ item.name }} members {{ origin_asn }}:{{ item.peer_as }};
+
+    replace: policy-statement import-{{ item.name }} {
+        then community add from-{{ item.name }};
+        then accept;
+    }
+
+    policy-statement export-{{ item.name }}-custom {
+        then next policy;
+    }
+    policy-statement import-{{ item.name }}-custom {
+        then next policy;
+    }
+
+{% if item.group != "customer" %}
+    replace: policy-statement priority-{{ item.name }} {
+       term preferred-as-path {
+           from as-path-group preferred-{{ item.name }};
+           then {
+               local-preference add 5;
+           }
+       }
+       term preferred-community {
+           from community preferred-{{ item.name }};
+           then {
+               local-preference add 6;
+           }
+       }
+       term skip-as-path {
+           from as-path-group skip-{{ item.name }};
+           then {
+               local-preference subtract 5;
+           }
+       }
+       term skip-community {
+           from community skip-{{ item.name }};
+           then {
+               local-preference subtract 6;
+           }
+       }
+    }
+
+    policy-statement blachhole-{{ item.name }} {
+        term blackhole-v4 {
+            from {
+                family inet;
+                community [ blackhole-all blackhole-{{ item.name }} ];
+                route-filter 0.0.0.0/0 prefix-length-range /32-/32;
+            }
+            then {
+                community set export-blackhole-{{ item.name }};
+                accept;
+            }
+        }
+        term blackhole-v6 {
+            from {
+                family inet6;
+                community [ blackhole-all blackhole-{{ item.name }} ];
+                route-filter ::/0 prefix-length-range /128-/128;
+            }
+            then {
+                community set export-blackhole-{{ item.name }};
+                accept;
+            }
+        }
+    }
+
+    replace: policy-statement prepend-{{ item.name }} {
+        term do-not-advertise {
+            from community dna-{{ item.name }};
+            then reject;
+        }
+        term once {
+            from community prepend-{{ item.name }}-1;
+            then {
+                as-path-prepend {{ origin_asn }};
+                accept;
+            }
+        }
+        term twice {
+            from community prepend-{{ item.name }}-2;
+            then {
+                as-path-prepend "{{ origin_asn }} {{ origin_asn }}";
+                accept;
+            }
+        }
+        term three-times {
+            from community prepend-{{ item.name }}-3;
+            then {
+                as-path-prepend "{{ origin_asn }} {{ origin_asn }} {{ origin_asn }}";
+                accept;
+            }
+        }
+        term four-times {
+            from community prepend-{{ item.name }}-4;
+            then {
+                as-path-prepend "{{ origin_asn }} {{ origin_asn }} {{ origin_asn }} {{ origin_asn }}";
+                accept;
+            }
+        }
+    }
+
+    as-path-group preferred-{{ item.name }} as-path dummy 65000;
+    as-path-group skip-{{ item.name }} as-path dummy 65000;
+
+    replace: community dna-{{ item.name }} members {{ item.peer_as }}:65000;
+    replace: community prepend-{{ item.name }}-1 members {{ item.peer_as }}:65001;
+    replace: community prepend-{{ item.name }}-2 members {{ item.peer_as }}:65002;
+    replace: community prepend-{{ item.name }}-3 members {{ item.peer_as }}:65003;
+    replace: community prepend-{{ item.name }}-4 members {{ item.peer_as }}:65004;
+
+    replace: community blackhole-{{ item.name }} members {{ item.peer_as }}:666;
+    replace: community export-blackhole-{{ item.name }} members {{ item.blackhole_community }};
+
+    community preferred-{{ item.name }} members 1:1;
+    community skip-{{ item.name }} members 1:1;
+{% endif %}
+
+{% if item.group == "peer" or item.group == "customer" %}
+    prefix-list {{ item.name }}-v4 {
+        100.0.0.1/32;
+    }
+    prefix-list {{ item.name }}-v6 {
+        2001:db8::100:0:0:1/128
+    }
+
+    replace: policy-statement prefixes-{{ item.name }} {
+        term prefixes-v4 {
+            from {
+                family inet;
+                prefix-list-filter {{ item.name }}-v4 orlonger;
+            }
+            then {
+                next policy;
+            }
+        }
+        term prefixes-v6 {
+            from {
+                family inet;
+                prefix-list-filter {{ item.name }}-v6 orlonger;
+            }
+            then {
+                next policy;
+            }
+        }
+        term drop {
+            then reject;
+        }
+    }
+{% endif %}
+}
+
+protocols {
+    bgp {
+        group {{ item.group }}-{{ item.name }} {
+            type {{ item.type | default("external") }};
+            description "{{ item.description | default('no-description') }}";
+            peer-as {{ item.peer_as }};
+            local-as {{ item.local_as | default(origin_asn) }};
+
+{% if item.authentication_key is defined %}
+            authentication-key "{{ item.authentication_key }}";
+{% endif %}
+
+
+{# export policies #}
+{% if item.export is not defined %}
+{% if item.group == "customer" %}
+            replace: export [ drop-all ];
+{% else %}
+            replace: export [ blachhole-{{ item.name }} drop-default drop-martians drop-long-prefixes export-{{ item.name }}-custom prepend-{{ item.name }} prepend-{{ item.group }} prepend-all export-customer export-{{ origin_name }}-{{ item.group }} drop-all ];
+{% endif %}
+{% else %}
+{% if item.export == false %}
+{# do not change export policy #}
+{% elif item.export == "default" %}
+            replace: export [ export-default-originate drop-all ];
+{% elif item.export == "full" %}
+            replace: export [ drop-default drop-martians drop-long-prefixes export-{{ item.name }}-custom accept-all ];
+{% elif item.export == "drop" %}
+            replace: export [ drop-all ];
+{% elif item.export == "origin" %}
+            replace: export [ drop-default drop-martians drop-long-prefixes export-{{ item.name }}-custom export-{{ origin_name }}-{{ item.group }} drop-all ];
+{% elif item.export == "customer" %}
+            replace: export [ drop-default drop-martians drop-long-prefixes export-{{ item.name }}-custom export-customer export-{{ origin_name }}-{{ item.group }} drop-all ];
+{% else %}
+            replace: export [ drop-all ];
+{% endif %}
+{% endif %}
+
+
+{# import policies #}
+{% if item.import is not defined %}
+{% if item.group == "customer" or item.group == "peer" %}
+            replace: import [ lp-{{ item.group }} drop-default drop-martians check-rpki import-{{ item.name }}-custom prefixes-{{ item.name }} import-blackhole drop-long-prefixes community-{{ item.group }} import-{{ item.name }} ];
+{% else %}
+            replace: import [ lp-{{ item.group }} drop-default drop-martians drop-long-prefixes check-rpki import-{{ item.name }}-custom priority-{{ item.name }} community-{{ item.group }} import-{{ item.name }} ];
+{% endif %}
+{% else %}
+{% if item.import == false %}
+{# do not change export policy #}
+{% elif item.import == "default" %}
+            replace: import [ import-default-originate drop-all ];
+{% elif item.import == "drop" %}
+            replace: import [ drop-all ];
+{% endif %}
+{% endif %}
+
+{# group peer neighbors #}
+{% for peer in item.neighbors %}
+            neighbor {{ peer.peer_address }} {
+                description "{{ peer.description | default("no-description") }}";
+{% if peer.local_address is defined %}
+                local-address {{ peer.local_address }};
+{% endif %}
+{% if peer.authentication_key is defined %}
+                authentication-key "{{ peer.authentication_key }}";
+{% endif %}
+            }
+{% endfor %}
+
+        }
+    }
+}

@@ -1,2 +1,142 @@
 ---
-# tasks file for juniper.bgp
+- name: prepare TMP dir {{ juniper_build }}
+  ansible.builtin.file:
+    path: "{{ juniper_build }}"
+    state: directory
+  run_once: true
+
+
+- name: generage community config
+  template:
+    src: community.conf.j2
+    dest: "{{ juniper_build }}/community.conf"
+  tags:
+    - default-community
+    - config
+
+- name: upload community config
+  junipernetworks.junos.junos_config:
+    src: "{{ juniper_build }}/community.conf"
+    update: replace
+    comment: update config
+    src_format: text
+    check_commit: "{{ check | default('yes') }}"
+    confirm: "{{ confirm | default(0) }}"
+    comment: ansible configured
+  tags:
+    - community
+    - upload
+
+
+- name: generage local preferences config
+  template:
+    src: local-preferencess.conf.j2
+    dest: "{{ juniper_build }}/local-preferencess.conf"
+  tags:
+    - default-lp
+    - config
+
+- name: upload local preferences config
+  junipernetworks.junos.junos_config:
+    src: "{{ juniper_build }}/local-preferencess.conf"
+    update: replace
+    comment: update config
+    src_format: text
+    check_commit: "{{ check | default('yes') }}"
+    confirm: "{{ confirm | default(0) }}"
+    comment: ansible configured
+  tags:
+    - default-lp
+    - upload
+
+
+- name: generage managed prefix-list config
+  template:
+    src: prefix-list.conf.j2
+    dest: "{{ juniper_build }}/prefix-list.conf"
+  tags:
+    - default-prefix-list
+    - config
+
+- name: upload managed prefix-list config
+  junipernetworks.junos.junos_config:
+    src: "{{ juniper_build }}/prefix-list.conf"
+    update: replace
+    comment: update config
+    src_format: text
+    check_commit: "{{ check | default('yes') }}"
+    confirm: "{{ confirm | default(0) }}"
+    comment: ansible configured
+  tags:
+    - default-community
+    - upload
+
+
+- name: generage default policy-options config
+  template:
+    src: default-policy-options.conf.j2
+    dest: "{{ juniper_build }}/default-policy-options.conf"
+  tags:
+    - default-policy-options
+    - config
+
+- name: upload default policy-options config
+  junipernetworks.junos.junos_config:
+    src: "{{ juniper_build }}/default-policy-options.conf"
+    update: replace
+    comment: update config
+    src_format: text
+    check_commit: "{{ check | default('yes') }}"
+    confirm: "{{ confirm | default(0) }}"
+    comment: ansible configured
+  tags:
+    - default-policy-options
+    - upload
+
+
+- name: generage default import and export policy-statement config
+  template:
+    src: import-export-policy-statement.conf.j2
+    dest: "{{ juniper_build }}/import-export-policy-statement.conf"
+  tags:
+    - default-policy-options
+    - config
+
+- name: upload default import and export policy-statement config
+  junipernetworks.junos.junos_config:
+    src: "{{ juniper_build }}/import-export-policy-statement.conf"
+    update: replace
+    comment: update config
+    src_format: text
+    check_commit: "{{ check | default('yes') }}"
+    confirm: "{{ confirm | default(0) }}"
+    comment: ansible configured
+  tags:
+    - default-policy-options
+    - upload
+
+
+- name: generate managed uplink bgp config
+  template:
+    src: bgp-peer.conf.j2
+    dest: "{{ juniper_build }}/{{ item.name }}-bgp-peer.conf"
+  with_items: "{{ bgp_groups }}"
+  when: bgp_groups is defined
+  tags:
+    - bpg
+    - config
+
+- name: upload managed uplink bgp config
+  junipernetworks.junos.junos_config:
+    src: "{{ juniper_build }}/{{ item.name }}-bgp-peer.conf"
+    update: replace
+    comment: update config
+    src_format: text
+    check_commit: "{{ check | default('yes') }}"
+    confirm: "{{ confirm | default(0) }}"
+    comment: ansible configured
+  with_items: "{{ bgp_groups }}"
+  when: bgp_groups is defined
+  tags:
+    - bgp
+    - upload

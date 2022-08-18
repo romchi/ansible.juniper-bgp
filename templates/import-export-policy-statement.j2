@@ -1,0 +1,287 @@
+policy-options {
+
+    replace: policy-statement import-blackhole {
+        term blackhole-v4 {
+            from {
+                family inet;
+                route-filter 0.0.0.0/0 prefix-length-range /32-/32;
+                community for-blackhole;
+            }
+            then accept;
+        }
+        term blackhole-v6 {
+            from {
+                family inet6;
+                route-filter ::/0 prefix-length-range /128-/128;
+                community for-blackhole;
+            }
+            then accept;
+        }
+    }
+    replace: policy-statement community-inet {
+        then community set from-inet;
+    }
+    replace: policy-statement community-ix {
+        then community set from-ix;
+    }
+    replace: policy-statement community-peer {
+        then community set from-peer;
+    }
+    replace: policy-statement community-customer {
+        term clear-community {
+            then community delete unsupported-communities;
+        }
+        term add-community {
+            then community add from-customer;
+        }
+    }
+    replace: policy-statement manual-prepend-1 {
+        then as-path-prepend {{ origin_asn }};
+    }
+    replace: policy-statement manual-prepend-2 {
+        then as-path-prepend "{{ origin_asn }} {{ origin_asn }}";
+    }
+    replace: policy-statement manual-prepend-3 {
+        then as-path-prepend "{{ origin_asn }} {{ origin_asn }} {{ origin_asn }}";
+    }
+    replace: policy-statement manual-prepend-4 {
+        then as-path-prepend "{{ origin_asn }} {{ origin_asn }} {{ origin_asn }} {{ origin_asn }}";
+    }
+    replace: policy-statement prepend-all {
+        term do-not-advertise {
+            from community dna-all;
+            then reject;
+        }
+        term once {
+            from community prepend-all-1;
+            then {
+                as-path-prepend {{ origin_asn }};
+                accept;
+            }
+        }
+        term twice {
+            from community prepend-all-2;
+            then {
+                as-path-prepend "{{ origin_asn }} {{ origin_asn }}";
+                accept;
+            }
+        }
+        term three-times {
+            from community prepend-all-3;
+            then {
+                as-path-prepend "{{ origin_asn }} {{ origin_asn }} {{ origin_asn }}";
+                accept;
+            }
+        }
+        term four-times {
+            from community prepend-all-4;
+            then {
+                as-path-prepend "{{ origin_asn }} {{ origin_asn }} {{ origin_asn }} {{ origin_asn }}";
+                accept;
+            }
+        }
+    }
+    replace: policy-statement prepend-inet {
+        term do-not-advertise {
+            from community dna-inet;
+            then reject;
+        }
+        term once {
+            from community prepend-inet-1;
+            then {
+                as-path-prepend {{ origin_asn }};
+                accept;
+            }
+        }
+        term twice {
+            from community prepend-inet-2;
+            then {
+                as-path-prepend "{{ origin_asn }} {{ origin_asn }}";
+                accept;
+            }
+        }
+        term three-times {
+            from community prepend-inet-3;
+            then {
+                as-path-prepend "{{ origin_asn }} {{ origin_asn }} {{ origin_asn }}";
+                accept;
+            }
+        }
+        term four-times {
+            from community prepend-inet-4;
+            then {
+                as-path-prepend "{{ origin_asn }} {{ origin_asn }} {{ origin_asn }} {{ origin_asn }}";
+                accept;
+            }
+        }
+    }
+    replace: policy-statement prepend-ix {
+        term do-not-advertise {
+            from community dna-ix;
+            then reject;
+        }
+        term once {
+            from community prepend-ix-1;
+            then {
+                as-path-prepend {{ origin_asn }};
+                accept;
+            }
+        }
+        term twice {
+            from community prepend-ix-2;
+            then {
+                as-path-prepend "{{ origin_asn }} {{ origin_asn }}";
+                accept;
+            }
+        }
+        term three-times {
+            from community prepend-ix-3;
+            then {
+                as-path-prepend "{{ origin_asn }} {{ origin_asn }} {{ origin_asn }}";
+                accept;
+            }
+        }
+        term four-times {
+            from community prepend-ix-4;
+            then {
+                as-path-prepend "{{ origin_asn }} {{ origin_asn }} {{ origin_asn }} {{ origin_asn }}";
+                accept;
+            }
+        }
+    }
+    replace: policy-statement prepend-peer {
+        term do-not-advertise {
+            from community dna-peer;
+            then reject;
+        }
+        term once {
+            from community prepend-peer-1;
+            then {
+                as-path-prepend {{ origin_asn }};
+                accept;
+            }
+        }
+        term twice {
+            from community prepend-peer-2;
+            then {
+                as-path-prepend "{{ origin_asn }} {{ origin_asn }}";
+                accept;
+            }
+        }
+        term three-times {
+            from community prepend-peer-3;
+            then {
+                as-path-prepend "{{ origin_asn }} {{ origin_asn }} {{ origin_asn }}";
+                accept;
+            }
+        }
+        term four-times {
+            from community prepend-peer-4;
+            then {
+                as-path-prepend "{{ origin_asn }} {{ origin_asn }} {{ origin_asn }} {{ origin_asn }}";
+                accept;
+            }
+        }
+    }
+    replace: policy-statement export-customer {
+        from {
+            community from-customer;
+        }
+        then {
+            accept;
+        }
+    }
+    replace: policy-statement export-full-view {
+        term export {
+            from {
+                community from-inet;
+                community from-ix;
+                community from-peer;
+                community from-customer;
+            }
+            then {
+                accept
+            }
+        }
+    }
+    replace: policy-statement export-{{ origin_name }}-inet {
+        term prefixes-v4 {
+            from {
+                family inet;
+                prefix-list-filter {{ origin_name }}-v4 exact;
+            }
+            then {
+                accept;
+            }
+        }
+        term prefixes-v6 {
+            from {
+                family inet6;
+                prefix-list-filter {{ origin_name }}-v6 exact;
+            }
+            then {
+                accept;
+            }
+        }
+    }
+    replace: policy-statement export-{{ origin_name }}-ix {
+        term prefixes-v4 {
+            from {
+                family inet;
+                prefix-list-filter {{ origin_name }}-v4 orlonger;
+            }
+            then {
+                accept;
+            }
+        }
+        term prefixes-v6 {
+            from {
+                family inet6;
+                prefix-list-filter {{ origin_name }}-v6 orlonger;
+            }
+            then {
+                accept;
+            }
+        }
+    }
+    replace: policy-statement export-{{ origin_name }}-peer {
+        term prefixes-v4 {
+            from {
+                family inet;
+                prefix-list-filter {{ origin_name }}-v4 exact;
+            }
+            then {
+                accept;
+            }
+        }
+        term prefixes-v6 {
+            from {
+                family inet6;
+                prefix-list-filter {{ origin_name }}-v6 exact;
+            }
+            then {
+                accept;
+            }
+        }
+    }
+    replace: policy-statement export-{{ origin_name }}-customer {
+        term prefixes-v4 {
+            from {
+                family inet;
+                prefix-list-filter {{ origin_name }}-v4 exact;
+            }
+            then {
+                accept;
+            }
+        }
+        term prefixes-v6 {
+            from {
+                family inet6;
+                prefix-list-filter {{ origin_name }}-v6 exact;
+            }
+            then {
+                accept;
+            }
+        }
+    }
+}

@@ -1,2 +1,23 @@
 ---
-# defaults file for juniper.bgp
+
+juniper_build: "~/.ansible-build/{{ inventory_hostname }}/"
+
+origin_name: "dummy"
+origin_asn: 65000
+
+community_index_group_inet: 25000
+community_index_group_ix: 25100
+community_index_group_peer: 25200
+community_index_group_customer: 25300
+
+community_index_bh: 666
+community_index_dna: 65000
+community_index_pre1: 65001
+community_index_pre2: 65002
+community_index_pre3: 65003
+community_index_pre4: 65004
+
+lp_inet: 130
+lp_ix: 140
+lp_peer: 150
+lp_customer: 160
