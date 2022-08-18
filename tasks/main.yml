@@ -40,6 +40,8 @@
     check_commit: "{{ check_commit | default('no') }}"
     confirm: "{{ confirm | default(0) }}"
     comment: ansible configured
+  diff: yes
+  register: device_status
   tags:
     - community
     - upload
@@ -47,11 +49,15 @@
 - name: Compare rollback the configuration
   junipernetworks.junos.junos_config:
     rollback: 1
-    check_commit: no
+    check_commit: yes
     confirm_commit: no
   diff: yes
   register: status_message
-  when: device_status.failed is false
+  when: device_status.failed is false and device_status.changed
+
+- name: changed communities
+  debug:
+    msg: "{{ status_message }}"
 
 
 - name: generage local preferences config

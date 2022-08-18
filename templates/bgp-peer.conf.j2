@@ -16,6 +16,8 @@ policy-options {
     }
 
 {% if item.group != "customer" %}
+    community unsupported-communities members 
+
     replace: policy-statement priority-{{ item.name }} {
        term preferred-as-path {
            from as-path-group preferred-{{ item.name }};
@@ -117,6 +119,15 @@ policy-options {
 
     community preferred-{{ item.name }} members 1:1;
     community skip-{{ item.name }} members 1:1;
+
+    community unsupported-communities members [
+        {{ item.peer_as }}:{{ community_index_bh }}
+        {{ item.peer_as }}:{{ community_index_dna }}
+        {{ item.peer_as }}:{{ community_index_pre1 }}
+        {{ item.peer_as }}:{{ community_index_pre2 }}
+        {{ item.peer_as }}:{{ community_index_pre3 }}
+        {{ item.peer_as }}:{{ community_index_pre4 }}
+    ];
 {% endif %}
 
 {% if item.group == "peer" or item.group == "customer" %}
