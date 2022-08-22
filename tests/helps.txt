@@ -1,0 +1,5 @@
+ansible-playbook -i roles.git/juniper-bgp/tests/inventory roles.git/juniper-bgp/tests/test.yml
+
+ansible-playbook -i roles.git/juniper-bgp/tests/inventory roles.git/juniper-bgp/tests/test.yml --tags config
+
+ansible-playbook -i roles.git/juniper-bgp/tests/inventory roles.git/juniper-bgp/tests/test.yml --tags policy-options -e check_commit=yes
