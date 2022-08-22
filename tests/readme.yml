@@ -1,0 +1,57 @@
+---
+- hosts: all
+
+  vars:
+    origin_asn: 65000
+    origin_name: "my_company_name"
+    prefix_lists:
+      "{{ origin_name }}-v4":
+        - 1.1.1.0/24
+        - 5.5.5.0/24
+      "{{ origin_name }}-v6":
+        - fd12:3456:789a:1::/64
+        - fd12:3456:789a:2::/64
+    bgp_groups:
+      - name: test-inet
+        peer_as: "1111"
+        local_as: "65000"
+        type: "external"
+        group: "inet"
+        blackhole_community: "1111:60000"
+        neighbors:
+          - peer_address: "1.1.1.1"
+            description: "ipv4"
+            local_address: "1.1.1.2"
+          - peer_address: "fd12:1111:789a:1::1"
+            description: "ipv6"
+            local_address: "fd12:1111:789a:1::2"
+      - name: test-ix
+        peer_as: "2222"
+        type: "external"
+        group: "ix"
+        blackhole_community: "2222:666"
+        neighbors:
+          - peer_address: "2.2.2.1"
+            description: "ipv4"
+            local_address: "2.2.2.2"
+            authentication_key: "$9$9gglAtOhclWLNEcwYg4UDtuO1IcKvLbYgIE7VYojiO1RcevXx-"
+          - peer_address: "fd12:2222:789a:1::1"
+            description: "ipv6"
+            local_address: "fd12:2222:789a:1::2"
+            authentication_key: "$9$9gglAtOhclWLNEcwYg4UDtuO1IcKvLbYgIE7VYojiO1RcevXx-"
+      - name: test-customer
+        peer_as: "3333"
+        local_as: "65000"
+        type: "external"
+        group: "customer"
+        export: "full"
+        neighbors:
+          - peer_address: "3.3.3.1"
+            description: "ipv4"
+            local_address: "3.3.3.2"
+          - peer_address: "fd12:3333:789a:1::1"
+            description: "ipv6"
+            local_address: "fd12:3333:789a:1::2"
+
+  roles:
+    - juniper-bgp

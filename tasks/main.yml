@@ -7,14 +7,6 @@
     - origin_name
     - origin_asn
 
-- name: notify if preffix list not defined
-  debug:
-    msg: "WARNING!!! prefix list {{ item }} not defined, no networks for announce. Check all you do correct."
-  when: prefix_list[item] is not defined
-  with_items:
-    - "{{ origin_name }}-v4"
-    - "{{ origin_name }}-v6"
-
 
 - name: prepare TMP dir {{ juniper_build }}
   ansible.builtin.file:

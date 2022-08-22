@@ -16,7 +16,6 @@ policy-options {
     }
 
 {% if item.group != "customer" %}
-    community unsupported-communities members 
 
     replace: policy-statement priority-{{ item.name }} {
        term preferred-as-path {
@@ -166,7 +165,7 @@ policy-options {
 
 protocols {
     bgp {
-        group {{ item.group }}-{{ item.name }} {
+        replace: group {{ item.group }}-{{ item.name }} {
             type {{ item.type | default("external") }};
             description "{{ item.description | default('no-description') }}";
             peer-as {{ item.peer_as }};
