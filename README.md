@@ -250,6 +250,12 @@ ansible-playbook -i hosts playbook.yml --tags config
 ansible-playbook -i hosts playbook.yml --tags prefix-list
 ```
 
+Для того щоб просто протестувати конфіг і подивитись що зміниться на роутері, без застосування нового конфігу потрібно передати змінну `check_commit=yes`:
+```
+ansible-playbook -i hosts playbook.yml --limit="border-1" -e "check_commit=yes"
+```
+
+
 ## License
 
 MIT
