@@ -44,7 +44,7 @@ policy-options {
        }
     }
 
-    policy-statement blachhole-{{ item.name }} {
+    policy-statement blackhole-{{ item.name }} {
         term blackhole-v4 {
             from {
                 family inet;
@@ -181,7 +181,7 @@ protocols {
 {% if item.group == "customer" %}
             replace: export [ drop-all ];
 {% else %}
-            replace: export [ blachhole-{{ item.name }} drop-default drop-martians drop-long-prefixes export-{{ item.name }}-custom prepend-{{ item.name }} prepend-{{ item.group }} prepend-all export-customer export-{{ origin_name }}-{{ item.group }} drop-all ];
+            replace: export [ blackhole-{{ item.name }} drop-default drop-martians drop-long-prefixes export-{{ item.name }}-custom prepend-{{ item.name }} prepend-{{ item.group }} prepend-all export-customer export-{{ origin_name }}-{{ item.group }} drop-all ];
 {% endif %}
 {% else %}
 {% if item.export == false %}
