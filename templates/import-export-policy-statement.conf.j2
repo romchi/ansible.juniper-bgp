@@ -35,18 +35,6 @@ policy-options {
             then community add from-customer;
         }
     }
-    replace: policy-statement manual-prepend-1 {
-        then as-path-prepend {{ origin_asn }};
-    }
-    replace: policy-statement manual-prepend-2 {
-        then as-path-prepend "{{ origin_asn }} {{ origin_asn }}";
-    }
-    replace: policy-statement manual-prepend-3 {
-        then as-path-prepend "{{ origin_asn }} {{ origin_asn }} {{ origin_asn }}";
-    }
-    replace: policy-statement manual-prepend-4 {
-        then as-path-prepend "{{ origin_asn }} {{ origin_asn }} {{ origin_asn }} {{ origin_asn }}";
-    }
     replace: policy-statement prepend-all {
         term do-not-advertise {
             from community dna-all;

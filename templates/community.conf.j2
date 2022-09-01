@@ -5,7 +5,9 @@ policy-options {
 
     community for-blackhole members {{ origin_asn }}:{{ community_index_bh }};
 
-    community unsupported-communities members [
+    community unsupported-communities {
+    invert-match;
+    members [
         {{ community_index_group_inet }}:{{ community_index_bh }}
         {{ community_index_group_inet }}:{{ community_index_dna }}
         {{ community_index_group_inet }}:{{ community_index_pre1 }}
@@ -33,7 +35,8 @@ policy-options {
         {{ origin_asn }}:{{ community_index_pre2 }}
         {{ origin_asn }}:{{ community_index_pre3 }}
         {{ origin_asn }}:{{ community_index_pre4 }}
-    ];
+        ];
+    }
 
     replace: community from-inet        members {{ origin_asn }}:{{ community_index_group_inet }};
     replace: community from-ix          members {{ origin_asn }}:{{ community_index_group_ix }};
