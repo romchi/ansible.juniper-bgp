@@ -194,7 +194,7 @@ policy-options {
     }
 
     replace: policy-statement export-{{ origin_name }}-inet {
-{% if prefix_list[origin_name ~ "-v4"] is defined or unmanaged_prefixes_v4 %}
+{% if prefix_lists[origin_name ~ "-v4"] is defined or unmanaged_prefixes_v4 %}
         term prefixes-v4 {
             from {
                 family inet;
@@ -205,7 +205,7 @@ policy-options {
             }
         }
 {% endif %}
-{% if refix_list[origin_name ~ "-v6"] is defined or unmanaged_prefixes_v6 %}
+{% if prefix_lists[origin_name ~ "-v6"] is defined or unmanaged_prefixes_v6 %}
         term prefixes-v6 {
             from {
                 family inet6;
@@ -220,7 +220,7 @@ policy-options {
     }
 
     replace: policy-statement export-{{ origin_name }}-ix {
-{% if prefix_list[origin_name ~ "-v4"] is defined or unmanaged_prefixes_v4 %}
+{% if prefix_lists[origin_name ~ "-v4"] is defined or unmanaged_prefixes_v4 %}
         term prefixes-v4 {
             from {
                 family inet;
@@ -231,7 +231,7 @@ policy-options {
             }
         }
 {% endif %}
-{% if prefix_list[origin_name ~ "-v6"] is defined or unmanaged_prefixes_v6 %}
+{% if prefix_lists[origin_name ~ "-v6"] is defined or unmanaged_prefixes_v6 %}
         term prefixes-v6 {
             from {
                 family inet6;
@@ -246,7 +246,7 @@ policy-options {
     }
 
     replace: policy-statement export-{{ origin_name }}-peer {
-{% if prefix_list[origin_name ~ "-v4"] is defined or unmanaged_prefixes_v4 %}
+{% if prefix_lists[origin_name ~ "-v4"] is defined or unmanaged_prefixes_v4 %}
         term prefixes-v4 {
             from {
                 family inet;
@@ -257,7 +257,7 @@ policy-options {
             }
         }
 {% endif %}
-{% if prefix_list[origin_name ~ "-v6"] is defined or unmanaged_prefixes_v6 %}
+{% if prefix_lists[origin_name ~ "-v6"] is defined or unmanaged_prefixes_v6 %}
         term prefixes-v6 {
             from {
                 family inet6;
@@ -272,7 +272,7 @@ policy-options {
     }
 
     replace: policy-statement export-{{ origin_name }}-customer {
-{% if prefix_list[origin_name ~ "-v4"] is defined or unmanaged_prefixes_v4 %}
+{% if prefix_lists[origin_name ~ "-v4"] is defined or unmanaged_prefixes_v4 %}
         term prefixes-v4 {
             from {
                 family inet;
@@ -283,7 +283,7 @@ policy-options {
             }
         }
 {% endif %}
-{% if prefix_list[origin_name ~ "-v6"] is defined or unmanaged_prefixes_v6 %}
+{% if prefix_lists[origin_name ~ "-v6"] is defined or unmanaged_prefixes_v6 %}
         term prefixes-v6 {
             from {
                 family inet6;
